@@ -1,0 +1,15 @@
+#!/usr/bin/python
+
+import sys
+import os
+from optparse import OptionParser
+
+if len(sys.argv) != 2:
+    print "Usage: leafdir <dir to search>"
+    sys.exit(2);
+
+parser = OptionParser
+
+for root, dirs, files  in os.walk(sys.argv[1]):
+    if len(dirs) == 0:
+        print root

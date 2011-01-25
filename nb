@@ -1,0 +1,7 @@
+#!/bin/sh
+
+cd ~/doc/blog
+
+vim `date '+%Y%m%d.txt'`
+
+ 

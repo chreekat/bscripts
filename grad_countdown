@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+
+use Time::Local;
+
+my $grad_time = timelocal(0, 0, 15, 19, 5, 105); # June 19, 3pm
+my $done_time = timelocal(0, 0, 12, 14, 5, 105); # June 14, 12pm
+
+my $current = time;
+
+my $grad_wait = $grad_time - $current;
+my $done_wait = $done_time - $current;
+
+#print "Time till graduation is done: ", showtime ($grad_wait), "\n";
+if ($done_wait < 0) {
+    print "Been done for: ", showtime (abs($done_wait)), "\n";
+}
+else {
+    print "Time till DONE with school: ", showtime ($done_wait), "\n";
+}
+
+sub showtime
+{
+    my ($seconds) = @_;
+
+    my ($minutes, $hours, $days, $outp);
+
+    $minutes = int ($seconds / 60);
+    $seconds %= 60;
+
+    if ($minutes) {
+        $hours = int ($minutes / 60);
+        $minutes %= 60;
+
+        if($hours) {
+            $days = int ($hours / 24);
+            $hours %= 24;
+            $outp = "$days days, $hours hours, ";
+        }
+        $outp .= "$minutes minutes, ";
+    }
+    return $outp .= "and $seconds seconds!!";
+}
+

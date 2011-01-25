@@ -1,0 +1,75 @@
+#!/usr/bin/perl 
+
+use warnings;
+use strict;
+
+#X
+#X+Z
+#dX
+#YdX
+#YdX+Z
+sub parse_roll {
+    my ($num, $sides, $add, $rest);
+    ($num, $rest) = split /d/, $_[0];
+    if (!$rest) {
+        $rest = $num;
+        $num = 1;
+    }
+	if (!$num) {
+		$num=1;
+	}
+    ($sides, $add) = split /\+/, $rest;
+    $add = 0 unless $add;
+
+    ($num, $sides, $add);
+}
+
+sub wget_random_org {
+    my ($num, $sides) = @_;
+    my $query = 
+        "http://www.random.org/integers/"
+       ."?col=1&base=10&format=plain&rand=new&min=1"
+       ."&num=$num" . "&max=$sides";
+    my $wget = "wget -q -O - '$query'";
+    open(my $handle, "$wget |");
+    $handle;
+}
+
+sub calc_rolls {
+    my ($num, $sides) = @_;
+    my @rolls;
+    my $sum = 0;
+    
+    my $number_handle = &wget_random_org($num, $sides);
+    for (1..$num) {
+        chomp(my $roll = <$number_handle>);
+        push @rolls, $roll;
+        $sum += $roll;
+    }
+    ($sum, @rolls);
+}
+
+sub main {
+    my $grand_total = 0;
+    while(<>) {
+        for my $roll (split) {
+            chomp $roll;
+            my ($num, $sides, $add) = &parse_roll($roll);
+            my ($sum, @rolls) = &calc_rolls($num, $sides);
+            printf "$roll: [%s] -> %d (+ %d) --> %d\n",
+                join(", ", @rolls), $sum, $add, $sum+$add;
+            $grand_total += $sum+$add;
+        }
+    }
+}
+
+&main;
+
+
+#1. break the command line into separate rolls
+#2. rolls are calculated and displayed like this: 
+#    "2d6+4: 4, 3 -> (7) +4 -> [11]"
+#    num, sides, add, rolls, sum, add, total
+#
+#3. show grand total
+#    totals

@@ -1,0 +1,23 @@
+#!/bin/sh 
+#
+# This script takes a string of swedish text and tries to translate each
+# word in turn.
+#
+# Yeah that is a sucky way to go about it, but it's better than nothing.
+
+def_buf=`mktemp`
+for i do 
+    dict -d fd-swe-eng $i > $def_buf 2>/dev/null
+    val=$?
+    case $val in
+        0) # definition found
+            grep '^\W' $def_buf | grep -v "^\W*$";;
+        21) # alternatives exist; list them
+            echo -n "  $i ("
+            grep '^fd-swe-eng' $def_buf | sed -e 's/fd-swe-eng:  //; s/$/)?/'
+            ;;
+        20) # no def, just list it for clarity
+            echo "  $i";;
+    esac
+done
+rm $def_buf

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+log=~/Documents/Log.txt
+
+set -e
+
+grep -q `ddate` $log || {
+    [ "`tail -n 1 $log`" = "" ] || echo ""
+    echo `ddate`
+    echo -e '------\n'
+} >> $log 
+
+vim + $log 

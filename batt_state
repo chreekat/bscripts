@@ -1,0 +1,67 @@
+#!/usr/bin/perl
+#use strict;
+
+use Getopt::Long;
+Getopt::Long::Configure('bundling');
+
+my ($logfile, $daemon) = ('/home/b/var/log/battery', );
+
+GetOptions ( 'd|daemon' => \$daemon, 'l|logfile=s' => \$logfile, ) 
+    or die "Usage: batt_state [-d|--daemon] [-l|--logfile <logfile>]\n";
+
+if ($daemon) { &monitor }
+else { print &status, "\n"; }
+
+
+#############################################
+sub status
+{
+    my ($state_file, $info_file, $curr, $cap);
+
+    open $state_file, "/proc/acpi/battery/BAT0/state" || die "eeek1";
+    open $info_file, "/proc/acpi/battery/BAT0/info" || die "eeeek2";
+
+    local $/; # slurp
+    $_ = <$state_file>;
+    if (/remaining capacity:\s+([0-9]+)/) {
+        $curr = $1;
+    }
+
+    $_ = <$info_file>;
+    if (/last full capacity:\s+([0-9]+)/) {
+        $cap = $1;
+    }
+
+    if (!$cap) { "I don't think it's plugged in."; }
+    else { sprintf ("%.2f\t%d", (100 * $curr / $cap), $curr); }
+}
+
+##############################################
+sub monitor
+{
+    
+
+    # TODO: HUP should start a new log
+    $SIG{'INT'} = 'cleanup';
+
+    open (my $fp, ">> $logfile") or die "Can't open $logfile for writing\n";
+    select $fp;
+    local $| = 1; # I want my pipes piping hot! 
+    print "# New log started at ", scalar localtime(), "\n";
+    my $start_time = time();
+    while (1) {
+        my $s = &status;
+        print (time() - $start_time, "    $s\n")
+            unless $s =~ /^100/; # don't print if message is boring
+        sleep 3;
+    }
+
+    sub cleanup {
+        print "\n";
+        sleep 1;
+        for (keys %SIG) { $SIG{$_} = undef }
+        die "Eek! A signal! Gotta run...\n";
+    }
+}
+
+###############################################

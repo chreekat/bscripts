@@ -1,0 +1,3 @@
+#!/bin/bash
+
+vim -q <(ack-grep "$@")

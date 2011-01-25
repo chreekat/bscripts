@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+date=`ddate`
+
+in_dir=/media/CANON_DC/DCIM/105___08
+photo_out_dir=/home/b/Pictures/$date
+vid_out_dir=/home/b/Videos/$date
+
+if [ -d $in_dir ]; then
+
+    mkdir -p $photo_out_dir
+    mkdir -p $vid_out_dir
+
+    mv -iv $in_dir/*.JPG $photo_out_dir
+    mv -iv $in_dir/*.AVI $vid_out_dir
+    rm $in_dir/*.THM
+
+    notify-send "Data transfer from camera is complete."
+else
+    notify-send "$in_dir does not exist! Is the camera's card in the slot?"
+fi

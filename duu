@@ -1,0 +1,3 @@
+#!/bin/bash
+
+fn0 "$1" | du -smc --files0-from - | sort -n

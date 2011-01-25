@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ $# -ne 1 ]; then
+    echo "Usage:"
+    echo "    letter <recipient>"
+else
+    vim ~/Documents/outbox/${1}.txt
+fi

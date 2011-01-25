@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# TWO MODES
+# 
+# with -R:
+#   1. Show albums at random, for some value of random.
+#   2. Give three options: skip, listen, delete, quit
+#   3. Adjust the album's score.
+#   4. Take the appropriate action (trash, listen, etc)
+#
+# with album specified on command line:
+#
+#   1. Adjust album's score
+#   2. Play album.
+
+shopt -s extglob
+
+MPG="mpg123 -C -i --title --cpu SSE"
+
+record () {
+    echo "$@ $(date +%Y:%m:%d:%H:%M)" >> ~/Music/randmusic.log
+}
+
+manual_play () {
+    record $1 m
+    $MPG "$1"/*
+}
+
+play () {
+    record $1 y
+    $MPG "$1"/*
+}
+
+skip () {
+    record $1 n
+}
+
+delete () {
+    read -p "Really delete $1? Type 'yes' to confirm: " conf
+    if [ $conf = "yes" ]; then
+        record $1 deleted
+        rm -r $1
+    fi
+    find ~/Music -empty -delete
+}
+
+kill_sample () {
+    # I just learned of this command. I use it to silence the "Terminated"
+    # message. It really makes the next two lines depressing though.
+    disown `pgrep mpg123`
+    pkill mpg123
+}
+
+rand_music () {
+    song_list_file=`tempfile`
+    trap "rm -f $song_list_file" EXIT
+
+    leafdir ~/Music | rand_sort.pl > $song_list_file
+    exec 5<$song_list_file
+
+    while read album <&5; do
+        ls -1 "$album"
+        first_song=$(ls -1 "$album" | head -n 1)
+        mpg123 -qn 400 "$album/$first_song" &
+        retry=true
+        while $retry; do 
+            read -n1 -p"$album? " cmd
+            echo
+            retry=false
+            case $cmd in
+                y|p) kill_sample; play "$album";;
+                n|s) kill_sample; skip "$album";;
+                D)   kill_sample; delete "$album";;
+                q)   kill_sample; break 2;;
+                *)   retry=true;;
+            esac
+        done
+    done
+    trap - EXIT
+    rm -f $song_list_file
+    echo
+}
+
+if [ $# = 1 ]; then
+    if [ $1 = "-R" ]; then
+        rand_music
+    else 
+        manual_play $1
+    fi
+else
+    echo "I don't think you know what you're talking about."
+    exit 2
+fi

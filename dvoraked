@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Translate the gibberish that comes from typing dvorak on a qwerty
+# keyboard, or vice versa. Assume qwerty on dvorak, but call as "$0 -doq"
+# for dvorak on qwerty.
+
+dvorak="',.pyfgcrl/=\\aoeuidhtns\-;qjkxbmwvz\"<>PYFGCRL?+|AOEUIDHTNS_:QJKXBMWVZ\[]{}" 
+qwerty="qwertyuiop[]\\asdfghjkl;'zxcvbnm,./QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?\-=_+"
+
+if test "$1" = '-doq'; then
+    tr $qwerty $dvorak
+else
+    tr $dvorak $qwerty
+fi

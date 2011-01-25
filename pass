@@ -1,0 +1,7 @@
+#!/usr/bin/perl
+
+$passfile = "~/passwords.gpg";
+$gpg = "/usr/bin/gpg";
+$grep = "/bin/grep";
+
+system "$gpg --quiet --decrypt $passfile | $grep @ARGV";

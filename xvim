@@ -1,0 +1,7 @@
+#!/bin/sh
+# A way to make an "executable" that applications can call to invoke vim.
+# Fucking dumbass applications.
+
+# With thanks to Tuomo for ion-runinxterm, of course.
+
+/usr/local/share/ion3/ion-runinxterm vim "$@"

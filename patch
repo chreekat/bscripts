@@ -1,0 +1,132 @@
+#!/usr/bin/perl -w
+
+use strict; 
+
+# I made this because I didn't have patch and I didn't have the internets. In
+# case they come back:
+-e '/usr/bin/patch' and exec "/usr/bin/patch @ARGV";
+
+my %state = (
+    file => 0,
+    multifile => 0,
+    hunk => 0,
+    inhunkdone => 0,
+    outhunkdone => 0,
+    empty_infile => 0,
+    );
+
+my (
+    $infile, 
+    $outfile, 
+    $infilename, 
+    $outfilename, 
+    $inlineno, 
+    $outlineno,
+    $instart,
+    $outstart,
+    $inlength,
+    $outlength,
+    );
+
+while (<STDIN>) {
+    chomp;
+    if (/^Index: (\w*)/) { 
+        &new_index($1);
+    }
+    elsif (!$state{file}) {
+        if (/^--- ([^\t]*)/) {
+            &new_file($1);
+        }
+        else { die "I expected file information, but got this:\n$_\n" }
+    }
+    elsif (/^@@ (.*) @@$/) {
+        &new_hunk($1);
+    }
+    elsif ($inlineno < $instart + $inlength ||
+            $outlineno < $outstart + $outlength) {
+        if (/^ (.*)$/) {
+            &context($1);
+        }
+        elsif (/^-(.*)$/) {
+            &old_line($1);
+        }
+        elsif (/^\+(.*)$/) {
+            &new_line($1);
+        }
+    }
+}
+&wrap_up_file;
+
+sub new_index {
+    if ($state{file}) {
+        &wrap_up_file;
+    }
+    $state{file} = 0;
+    $state{hunk} = 0;
+    $state{multifile} = 1;
+    <STDIN>; # Ignore horizontal break
+}
+
+sub new_file {
+    $infilename = $_[0];
+    $outfilename = "$infilename.patched";
+    if (-e $infilename) {
+        open $infile, "<$infilename" or die;
+        $state{empty_infile} = 0;
+    }
+    else {
+        $state{empty_infile} = 1;
+    }
+    open $outfile, ">$outfilename" or die;
+    select $outfile;
+    $inlineno = 1; $outlineno = 1;
+    $state{file} = 1;
+    <STDIN>; # Ignore diff source info
+}
+
+sub new_hunk {
+    my $hunk_info = $_[0];
+    ($instart, $inlength, $outstart, $outlength) = 
+        $hunk_info =~ /-(\d*),(\d*) \+(\d*),(\d*)/;
+
+    while ($inlineno < $instart) {
+        my $line = <$infile>;
+        print $line;
+        ++$inlineno;
+        ++$outlineno;
+    }
+    $state{hunk} = 1;
+}
+
+sub context {
+    my $line = $_[0];
+    chomp (my $inline = <$infile>);
+    if ($inline ne $line) {
+        die "Context line did not match input file.\n";
+    }
+    $inlineno += 1; 
+    $outlineno += 1;
+    print "$line\n";
+}
+
+sub old_line {
+    my $line = $_[0];
+    chomp (my $inline = <$infile>);
+    $inline eq $line or die "Old line didn't match input file\n";
+    $inlineno += 1;
+}
+
+sub new_line {
+    my $line = $_[0];
+    print $line, "\n";
+    $outlineno += 1;
+}
+
+sub wrap_up_file {
+    if (!$state{empty_infile}) {
+        print while <$infile>;
+        close $infile;
+    }
+    close $outfile;
+    rename $outfilename, $infilename;
+}

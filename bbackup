@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd /home
+if [ -d /media/Backup ]; then
+
+    rsync -ai --delete \
+        --exclude=.cache --exclude=.thumbnails --exclude=Trash b --exclude=Downloads \
+        /media/Backup
+
+    notify-send "Backup complete."
+else
+    notify-send "Backup directory did not exist!"
+fi
