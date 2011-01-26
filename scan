@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# 150 dpi seems best for scanning text
+hp-scan -r 150
