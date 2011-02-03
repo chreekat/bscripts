@@ -59,12 +59,26 @@ build_arrays() {
             add_month "$o" "$t"
         fi
     done
+
+    # Now, make folders with contents stick out
+    emphasize_nonempty_folders
 }
 
 add_month () {
     o=$1; t=$2;
     Folder_names[$o]=$(date -d "$t" +%B)
     Physical_dirs[$o]=$(date -d "$t" +%Y%m)
+}
+
+emphasize_nonempty_folders () {
+    # Easiest just to remove empty folders. :)
+    find $Filing_cabinet -empty -delete
+
+    for ((i=0; i<43; i++)); do
+        if [ -e "${Filing_cabinet}/${Physical_dirs[$i]}" ]; then
+            Folder_names[$i]=${Folder_names[$i]}" (!)"
+        fi
+    done
 }
 
 main
