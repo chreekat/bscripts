@@ -41,7 +41,7 @@ build_arrays() {
     # i is input iterator, o is output iterator
     for ((i=0, o=0; o < 43; i++, o++)); do
         # First 32 inputs turn into days with 1 month interspersed
-        if [ $i -lt 32 ]; then
+        if [ $i -lt 31 ]; then
 
             if [ $i -eq $next_month_index ]; then
                 t="$current_month 1 + 1 month"
@@ -55,7 +55,7 @@ build_arrays() {
 
             # Rest of inputs are months
         else
-            t="$current_month 1 + $[$i - 30] month"
+            t="$current_month 1 + $[$i - 29] month"
             add_month "$o" "$t"
         fi
     done
