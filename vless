@@ -1,3 +1,0 @@
-#!/bin/sh
-
-vim '+exec B_less_mode()' $@
