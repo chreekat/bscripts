@@ -36,7 +36,8 @@ main () {
 
 build_arrays() {
     current_month=$(date +%B)
-    next_month_index=$[32 - `date +%d`]
+    # Use %-d so numbers aren't interpreted as octal (<-- errors on '08')
+    next_month_index=$[32 - `date +%-d`]
 
     # i is input iterator, o is output iterator
     for ((i=0, o=0; o < 43; i++, o++)); do
