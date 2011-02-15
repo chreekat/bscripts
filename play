@@ -59,6 +59,7 @@ rand_music () {
     exec 5<$song_list_file
 
     while read album <&5; do
+        clear
         ls -1 "$album"
         first_song=$(ls -1 "$album" | head -n 1)
         mpg123 -qn 400 "$album/$first_song" &
