@@ -4,7 +4,7 @@
 # 
 # with -R:
 #   1. Show albums at random, for some value of random.
-#   2. Give three options: skip, listen, delete, quit
+#   2. Give four options: skip, listen, delete, quit
 #   3. Adjust the album's score.
 #   4. Take the appropriate action (trash, listen, etc)
 #
