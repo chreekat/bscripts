@@ -13,6 +13,9 @@
 #   1. Adjust album's score
 #   2. Play album.
 
+_TESTING_=false
+_TEST_ALBUM_="/home/b/Music/In_Flames/Whoracle"
+
 shopt -s extglob
 
 play_with_args () {
@@ -31,7 +34,8 @@ play_sample () {
 }
 
 record () {
-    echo "$@ $(date +%Y:%m:%d:%H:%M)" >> ~/Music/randmusic.log
+    $_TESTING_ ||
+        echo "$@ $(date +%Y:%m:%d:%H:%M)" >> ~/Music/randmusic.log
 }
 
 manual_play () {
@@ -72,6 +76,8 @@ rand_music () {
     exec 5<$song_list_file
 
     while read album <&5; do
+        $_TESTING_ && [ -n "$_TEST_ALBUM_" ] &&
+            album=$_TEST_ALBUM_
         clear
         cat <<-EOF
 -------------------------------------------------------------------------------
@@ -99,6 +105,11 @@ EOF
     trap - EXIT
     rm -f $song_list_file
     echo
+}
+
+$_TESTING_  && {
+    echo "The varible _TESTING_ is set to true!"
+    sleep 3
 }
 
 if [ $# = 1 ]; then
