@@ -27,10 +27,10 @@ main () {
         if [ -n "$dir" ]; then
             let "i = REPLY - 1"
             physical_dir=${Physical_dirs[$i]}
-            export PS1="[TICKLER] ${Folder_names[$i]}$ "
+            export tickler_ps1="[TICKLER] ${Folder_names[$i]}$ "
             mkdir -p $Filing_cabinet/$physical_dir
             cd $Filing_cabinet/$physical_dir
-            bash --norc
+            bash --rcfile $Filing_cabinet/bashrc
             cd - >/dev/null
         fi
     done
