@@ -62,10 +62,9 @@ delete () {
 }
 
 kill_sample () {
-    # I just learned of this command. I use it to silence the "Terminated"
-    # message. It really makes the next two lines depressing though.
-    disown `pgrep mpg123`
-    pkill mpg123
+    # Use INT, the 'keyboard interrupt', because bash doesn't display the
+    # 'Terminated' message when it's used.
+    pkill -INT mpg123
 }
 
 rand_music () {
