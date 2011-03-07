@@ -3,7 +3,7 @@
 ## Display a list of folders
 ## Spawn a shell and drop to appropriate dir
 
-# This is wehre all the tickler directories physically live. Modify to taste.
+# This is where all the tickler directories physically live. Modify to taste.
 Filing_cabinet=~/Org/Tickler
 
 #####
@@ -20,6 +20,8 @@ main () {
     sleep 1
 
     build_arrays
+
+    collect_skipped_items
     
     select dir in "${Folder_names[@]}"; do
         if [ -n "$dir" ]; then
@@ -32,6 +34,9 @@ main () {
             cd - >/dev/null
         fi
     done
+
+    # Keep track of when we were run last
+    echo "$(date -R)" >> $Filing_cabinet/last_run
 }
 
 build_arrays() {
@@ -54,7 +59,7 @@ build_arrays() {
             Folder_names[$o]=$(date -d "$t" +"%b-%d")
             Physical_dirs[$o]=$(date -d "$t" +%Y%m%d)
 
-            # Rest of inputs are months
+        # Rest of inputs are months
         else
             t="$current_month 1 + $[$i - 29] month"
             add_month "$o" "$t"
@@ -63,6 +68,41 @@ build_arrays() {
 
     # Now, make folders with contents stick out
     emphasize_nonempty_folders
+}
+
+collect_skipped_items () {
+    # Last run time is determined by $Filing_cabinet/last_run's mod time. If
+    # the last run was earlier than yesterday, we'll gather any/everything that
+    # was skipped between that day and today.
+    
+    skipped_items=""
+
+    yesterday=$(date +%s -d 'yesterday 4am')
+    # The following computes to 4am on the day last_run was modified.
+    last_run=$(
+        date +%s \
+             -d "$(date +'%Y-%m-%d 4am' \
+                        -d "`stat -c %y $Filing_cabinet/last_run`")")
+
+    if [ $(( $last_run_date - $yesterday )) -lt 0 ] ; then 
+        for ((i = $last_run; i < $yesterday; i += 60*60*24)); do
+            dir=$(date +%Y%m%d -d @$i)
+            [ -d $Filing_cabinet/$dir ] && 
+                skipped_items="$skipped_items $Filing_cabinet/$dir"
+        done
+    fi
+
+    if [ -n "$skipped_items" ]; then
+        echo "Skipped items found!"
+        echo ""
+        echo "    $skipped_items" | par
+        echo ""
+        sleep 1
+
+        dump_dir="$Filing_cabinet/$(date +%Y%m%d)/skipped_items"
+        mkdir -p $dump_dir
+        cp -r $skipped_items $dump_dir
+    fi
 }
 
 add_month () {
