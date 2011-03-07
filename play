@@ -15,7 +15,20 @@
 
 shopt -s extglob
 
-MPG="mpg123 -C -i --title --cpu SSE"
+play_with_args () {
+    args=$1
+    shift
+    mpg123 $args --title --cpu SSE "$@" 2>&1 | tee -a ~/Music/err.log
+    echo "Goodness, $?" >> ~/Music/err.log
+}
+
+play_album () {
+    play_with_args "-Cb 2048" "$@"
+}
+
+play_sample () {
+    play_with_args "-qn 400" "$@"
+}
 
 record () {
     echo "$@ $(date +%Y:%m:%d:%H:%M)" >> ~/Music/randmusic.log
@@ -23,12 +36,12 @@ record () {
 
 manual_play () {
     record $1 m
-    $MPG "$1"/*
+    play_album "$1"/*
 }
 
 play () {
     record $1 y
-    $MPG "$1"/*
+    play_album "$1"/*
 }
 
 skip () {
@@ -68,7 +81,7 @@ $album
 
 EOF
         first_song=$(ls -1 "$album" | head -n 1)
-        mpg123 -qn 400 "$album/$first_song" &
+        play_sample "$album/$first_song" &
         retry=true
         while $retry; do 
             read -n1 -p"? " cmd
