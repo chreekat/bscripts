@@ -19,6 +19,9 @@ main () {
     echo
     sleep 1
 
+    # Tidy up
+    find $Filing_cabinet -type d -empty -delete
+
     build_arrays
 
     collect_skipped_items
@@ -108,15 +111,20 @@ collect_skipped_items () {
 add_month () {
     o=$1; t=$2;
     Folder_names[$o]=$(date -d "$t" +%B)
-    Physical_dirs[$o]=$(date -d "$t" +%Y%m)
+    Physical_dirs[$o]=$(date -d "$t" +%Y%m%d/month)
 }
 
 emphasize_nonempty_folders () {
-    # Easiest just to remove empty folders. :)
-    find $Filing_cabinet -empty -delete
+    # Easiest just to remove empty folders. :) But now that monthly files live
+    # under the first day of the month, we must make an exception for them.
 
     for ((i=0; i<43; i++)); do
-        if [ -e "${Filing_cabinet}/${Physical_dirs[$i]}" ]; then
+        d="${Filing_cabinet}/${Physical_dirs[$i]}"
+        if [ -e "$d" ]; then
+            # Exception for months
+            if [ "${Folder_names[$i]:4:2}" = "01" ]; then
+                ls $d | grep -qv '^month$' || continue
+            fi
             Folder_names[$i]=${Folder_names[$i]}" (!)"
         fi
     done
