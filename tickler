@@ -79,6 +79,7 @@ collect_skipped_items () {
     # was skipped between that day and today.
     
     skipped_items=""
+    one_day=$((60*60*24))
 
     yesterday=$(date +%s -d 'yesterday 4am')
     # The following computes to 4am on the day last_run was modified.
@@ -87,13 +88,11 @@ collect_skipped_items () {
              -d "$(date +'%Y-%m-%d 4am' \
                         -d "`stat -c %y $Filing_cabinet/last_run`")")
 
-    if [ $(( $last_run_date - $yesterday )) -lt 0 ] ; then 
-        for ((i = $last_run; i < $yesterday; i += 60*60*24)); do
-            dir=$(date +%Y%m%d -d @$i)
-            [ -d $Filing_cabinet/$dir ] && 
-                skipped_items="$skipped_items $Filing_cabinet/$dir"
-        done
-    fi
+    for ((i = $last_run + $one_day; i <= $yesterday; i += $one_day)); do
+        dir=$(date +%Y%m%d -d @$i)
+        [ -d $Filing_cabinet/$dir ] && 
+            skipped_items="$skipped_items $Filing_cabinet/$dir"
+    done
 
     if [ -n "$skipped_items" ]; then
         echo "Skipped items found!"
