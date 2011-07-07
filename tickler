@@ -137,7 +137,7 @@ emphasize_nonempty_folders () {
             if [ "${Folder_names[$i]:4:2}" = "01" ]; then
                 ls $d | grep -qv '^month$' || continue
             fi
-            Folder_names[$i]=${Folder_names[$i]}" (!)"
+            Folder_names[$i]=${Folder_names[$i]}" !!"
         fi
     done
 }
