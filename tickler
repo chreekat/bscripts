@@ -42,6 +42,15 @@ main () {
     echo "$(date -R)" >> $Filing_cabinet/last_run
 }
 
+relative_date_name () {
+    case $1 in
+        1) echo tomorrow ;;
+        [2-6]) date -d "today + $1 day" +%a;;
+        7) echo "next week"
+    esac
+    echo
+}
+
 build_arrays() {
     current_month=$(date +%B)
     # Use %-d so numbers aren't interpreted as octal (<-- errors on '08')
@@ -59,7 +68,11 @@ build_arrays() {
             fi
 
             t="today + $i day"
-            Folder_names[$o]=$(date -d "$t" +"%b-%d")
+
+            sfx=
+            rel_name=$(relative_date_name $i)
+            [ -n "$rel_name" ] && sfx=" ($rel_name)"
+            Folder_names[$o]=$(date -d "$t" +"%b-%d")"$sfx"
             Physical_dirs[$o]=$(date -d "$t" +%Y%m%d)
 
         # Rest of inputs are months
