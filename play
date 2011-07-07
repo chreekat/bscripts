@@ -71,7 +71,7 @@ rand_music () {
     song_list_file=`tempfile`
     trap "rm -f $song_list_file" EXIT
 
-    leafdir ~/Music | rand_sort.pl > $song_list_file
+    leafdir ~/Music | sort -R > $song_list_file
     exec 5<$song_list_file
 
     while read album <&5; do
