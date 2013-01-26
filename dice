@@ -15,9 +15,9 @@ sub parse_roll {
         $rest = $num;
         $num = 1;
     }
-	if (!$num) {
-		$num=1;
-	}
+    if (!$num) {
+        $num=1;
+    }
     ($sides, $add) = split /\+/, $rest;
     $add = 0 unless $add;
 
@@ -26,7 +26,7 @@ sub parse_roll {
 
 sub wget_random_org {
     my ($num, $sides) = @_;
-    my $query = 
+    my $query =
         "http://www.random.org/integers/"
        ."?col=1&base=10&format=plain&rand=new&min=1"
        ."&num=$num" . "&max=$sides";
@@ -39,7 +39,7 @@ sub calc_rolls {
     my ($num, $sides) = @_;
     my @rolls;
     my $sum = 0;
-    
+
     my $number_handle = &wget_random_org($num, $sides);
     for (1..$num) {
         chomp(my $roll = <$number_handle>);
@@ -50,15 +50,19 @@ sub calc_rolls {
 }
 
 sub main {
-    my $grand_total = 0;
     while(<>) {
-        for my $roll (split) {
-            chomp $roll;
-            my ($num, $sides, $add) = &parse_roll($roll);
-            my ($sum, @rolls) = &calc_rolls($num, $sides);
-            printf "$roll: [%s] -> %d (+ %d) --> %d\n",
-                join(", ", @rolls), $sum, $add, $sum+$add;
-            $grand_total += $sum+$add;
+        for (split ",") {
+            chomp;
+            my $grand_total = 0;
+            for my $roll (split) {
+                chomp $roll;
+                my ($num, $sides, $add) = &parse_roll($roll);
+                my ($sum, @rolls) = &calc_rolls($num, $sides);
+                printf "$roll: [%s] -> %d (+ %d) --> %d\n",
+                    join(", ", @rolls), $sum, $add, $sum+$add;
+                $grand_total += $sum+$add;
+            }
+            printf "Grand Total: %s\n", $grand_total;
         }
     }
 }

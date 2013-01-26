@@ -1,13 +1,19 @@
 #!/bin/bash
 
 log=~/Documents/Log.txt
-
+date=`ddate`
+time=`date +%H:%M`
 set -e
 
-grep -q `ddate` $log || {
-    [ "`tail -n 1 $log`" = "" ] || echo ""
-    echo `ddate`
-    echo -e '------\n'
-} >> $log 
+(
+    exec >>$log
 
-vim + $log 
+    [ "`tail -n 1 $log`" = "" ] || echo ""
+    if ! grep -q $date <$log ; then
+        echo -e "${date}\n------\n"
+    fi
+    echo -e "${time}: "
+)
+
+# '+' means 'cursor at last line'
+vim + $log +startinsert\!

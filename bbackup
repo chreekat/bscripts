@@ -1,13 +1,77 @@
 #!/bin/bash
 
-cd /home
-if [ -d /media/Backup ]; then
+set -e
 
-    rsync -ai --delete \
-        --exclude=.cache --exclude=.thumbnails --exclude=Trash b --exclude=Downloads \
-        /media/Backup
+BACKUP_LOC=/media/Backup
 
+exclude_file_dir=$(mktemp -d)
+exclude_file=${exclude_file_dir}/xx00
+trap "rm -rf $exclude_file_dir" EXIT
+
+(cd $exclude_file_dir; csplit -s $0  %--\%--\%--%+1)
+
+backup_is_mounted () {
+    mount | grep -q "on $BACKUP_LOC"
+}
+
+backup_data () {
+    cd /home
+    rsync -ai --delete --delete-excluded \
+        --exclude-from $exclude_file b $BACKUP_LOC
+
+}
+
+if backup_is_mounted ; then
+    backup_data
     notify-send "Backup complete."
 else
     notify-send "Backup directory did not exist!"
 fi
+
+exit 0
+# exclude file from here!
+# --%--%--
+.adobe
+.aptitude/cache
+.cabal
+.cache
+.compiz
+.compiz-1
+.config
+.dbus
+.dmrc
+Downloads
+.dropbox
+Dropbox
+.fontconfig
+.gconf
+.gconfd
+.gdocsfs.log
+.gnome2
+.gtk-bookmarks
+*.hi
+.ICEauthority
+.icedtea
+.icons
+.local
+.lesshst
+.libreoffice
+.macromedia
+.mission-control
+.mozilla
+.nautilus
+.ncmcpp/error.log
+*.o
+.pki
+.pulse
+.pulse-cookie
+.s3ql
+.shotwell/thumbs
+.Skype
+.sqlite_history
+.thumbnails
+tmp
+Trash
+.xsession-errors*
+.opera
+Media Cache

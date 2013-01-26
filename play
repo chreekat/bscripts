@@ -43,16 +43,16 @@ manual_play () {
     play_album "$1"/*
 }
 
-play () {
+cmd_play () {
     record $1 y
     play_album "$1"/*
 }
 
-skip () {
+cmd_skip () {
     record $1 n
 }
 
-delete () {
+cmd_delete () {
     read -p "Really delete $1? Type 'yes' to confirm: " conf
     if [ $conf = "yes" ]; then
         record $1 deleted
@@ -93,9 +93,9 @@ EOF
             echo
             retry=false
             case $cmd in
-                y|p) kill_sample; play "$album";;
-                n|s) kill_sample; skip "$album";;
-                D)   kill_sample; delete "$album";;
+                y|p) kill_sample; cmd_play "$album";;
+                n|s) kill_sample; cmd_skip "$album";;
+                D)   kill_sample; cmd_delete "$album";;
                 q)   kill_sample; break 2;;
                 *)   retry=true;;
             esac
