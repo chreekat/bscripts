@@ -1,0 +1,11 @@
+#!/bin/bash
+
+args=
+
+if [ -n "$1" ]; then
+    args="$1/*"
+else
+    args="*"
+fi
+
+du -sm $args | sort -n

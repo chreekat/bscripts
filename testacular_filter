@@ -1,0 +1,4 @@
+#!/usr/bin/perl -p
+
+# New, better idea : Only show a message on success!  It's pavlovian!
+/TOTAL/ && system "notify-send", "-t", "1500", "Test Result", $_;

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Loads up files with differences between working directory and index, or files
+# with conflicts.
+
+status='git status -s'
+
+if ($status | grep '^U\|^.U'); then
+    cmd='/^U|^.U/ { print $2 }'
+else
+    cmd='/^.M/ { print $2 }'
+fi
+exec vim $($status | awk "$cmd")
+

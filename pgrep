@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pgrep=/usr/bin/pgrep
+
+ps `$pgrep $@`

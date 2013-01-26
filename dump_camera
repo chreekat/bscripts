@@ -1,0 +1,28 @@
+#!/bin/bash
+
+if [ -n "$1" ]; then
+    tag="$(date '+%Y%m%d')_$1"
+
+    pics=`find /media/CANON_DC/DCIM/ -name '*.JPG'`
+    vids=`find /media/CANON_DC/DCIM/ -name '*.AVI'`
+
+    if [ -n "$pics" ]; then
+        mkdir ~/Pictures/$tag
+        mv -iv $pics ~/Pictures/$tag
+    fi
+
+    if [ -n "$vids" ]; then
+        mkdir ~/Videos/$tag
+        for v in $vids; do 
+            mencoder $v -oac mp3lame -ovc lavc -o ~/Videos/$tag/$i &&
+                rm -v $v
+        done
+    fi
+
+    rm -r /media/CANON_DC/DCIM/*
+    umount /media/CANON_DC
+
+else
+    >&2 echo "Usage: $0 <tag>"
+    exit 1
+fi

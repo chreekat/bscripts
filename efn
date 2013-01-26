@@ -1,0 +1,8 @@
+#!/bin/bash
+
+args=`fn $@`
+if [ -n "$args" ]; then
+    vim $args
+else
+    echo "No results" >&2
+fi
