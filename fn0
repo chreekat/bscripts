@@ -1,10 +1,10 @@
 #!/bin/bash
 
 if [ $# = 2 ]; then
-	loc="$1"
-	shift
+    loc="$1"
+    shift
 else
-	loc=.
+    loc=.
 fi
 
 find "$loc" -name "*$1*" -print0
