@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+BUP_DIR=$HOME/Dropbox/bup
+
+cd
+bup index -u LoByMyHand
+bup save -n myWork LoByMyHand
