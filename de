@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ $# = 0 ]; then
+    vim ~/LoByMyHand/bDotfiles
+else
+    vim `ls -l $1 | sed -e 's/^.*-> //'`
+fi
