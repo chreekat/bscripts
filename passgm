@@ -1,0 +1,5 @@
+#!/usr/bin/python
+
+from keyring import get_password
+
+print(get_password("gmail", "bryan.richter@gmail.com"))
