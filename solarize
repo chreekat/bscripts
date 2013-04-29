@@ -34,12 +34,14 @@ die () {
 
 dark () {
     PALETTE="${b02}:${red}:${gre}:${yel}:${blu}:${mag}:${cya}:${ba2}:${b03}:${ora}:${b01}:${b00}:${ba0}:${vio}:${ba1}:${ba3}"
+    PALETTE=$(long_color_code $PALETTE)
     BG_COLOR="${b03}"
     FG_COLOR="${ba0}"
 }
 
 light () {
     PALETTE="${ba2}:${red}:${gre}:${yel}:${blu}:${mag}:${cya}:${b02}:${ba3}:${ora}:${ba1}:${ba0}:${b00}:${vio}:${b01}:${b03}"
+    PALETTE=$(long_color_code $PALETTE)
     BG_COLOR="${ba3}"
     FG_COLOR="${b00}"
 }
@@ -72,6 +74,11 @@ reverse_solarized() {
     fi
     $found
     return $?
+}
+
+long_color_code() {
+    # Repeat each byte and uppercase everything
+    echo $@ | perl -pe 's/#(..)(..)(..)/#\U$1$1$2$2$3$3/g'
 }
 
 main () {
