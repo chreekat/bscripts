@@ -1,9 +1,16 @@
 #!/bin/bash
 
+set -e
+
 log=~/Documents/Log.txt
 date=`ddate`
 time=`date +%H:%M`
-set -e
+
+if [ -n "$(ls ~/Documents/.Log.txt.sw? 2>/dev/null)" ]; then
+    >&2 echo "Swap files exist!"
+    >&2 ls ~/Documents/.Log.txt.sw?
+    exit 1
+fi
 
 (
     exec >>$log
@@ -15,5 +22,14 @@ set -e
     echo -e "${time}: "
 )
 
+if [ -n "$TMUX" ]; then
+    tmux rename-window day
+fi
+
 # '+' means 'cursor at last line'
 vim + $log +startinsert\!
+
+if [ -n "$TMUX" ]; then
+    tmux set automatic-rename on >/dev/null
+fi
+
