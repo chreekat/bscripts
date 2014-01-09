@@ -13,6 +13,9 @@ case ${0##*/} in
     "wtd")
         msg="It is truly a mystery."
         ;;
+    "oh")
+        msg="Yes, it's all becoming clear now."
+        ;;
     *)
         msg="      wat"
 esac
