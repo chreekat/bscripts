@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+import sys
+
+if len(sys.argv) > 1 and sys.argv[1] == "barobo":
+  user = "bryan@barobo.com"
+else:
+  user = "bryan.richter@gmail.com"
+
 from keyring import get_password
 
-print(get_password("gmail", "bryan.richter@gmail.com"))
+print(get_password("gmail", user))
