@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+cd $HOME
+
+# Same device, so rename doesn't complain
+tmp=$(mktemp -d --tmpdir=Music)
+trap "rm -rf $tmp" EXIT
+
+rsync -r "$1/" $tmp
+
+audio_rename -p "Music/%a/%l/%{mA}%{n0}__%t" -R $tmp
