@@ -1,5 +1,7 @@
 #!/bin/bash
 
-pgrep=/usr/bin/pgrep
+things=$(/usr/bin/pgrep $@)
 
-ps `$pgrep $@`
+if [ -n "$things" ]; then
+    ps $things
+fi
