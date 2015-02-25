@@ -9,6 +9,10 @@ case ${0##*/} in
     "lol")
         msg="  D:"
         ;;
+
+    "wtd")
+        msg="It is truly a mystery."
+        ;;
     *)
         msg="      wat"
 esac
