@@ -1,7 +1,0 @@
-#!/bin/sh
-
-cd ~/doc/dreams
-
-vim `date '+%Y%m%d.txt'`
-
- 
