@@ -1,34 +1,5 @@
-#!/usr/bin/perl -w
+#!/bin/sh
 
-use strict;
-
-die "
-Sorts a list of items in a file by user-specified importance. Can't accept the 
-list on stdin because we need stdin for user input.
-
-Usage: $0 <file with items, 1 per line>
-
-"
-
-        unless (@ARGV > 0);
-
-# Returns -1 if $item1 is more important than $item2.
-# Return 1 if the reverse is true.
-sub comparator(){
-    print "-- $a --\nis more important than\n-- $b -- ?\n";
-    system "stty", '-icanon', 'eol', "\001";
-    my $choice = getc;
-    system "stty", 'icanon', 'eol', "\000";
-    print "\n";
-
-    return ($choice eq 'y') ? -1: 1;
-}
-
-chomp(my @items= <>);
-
-my $cmp = 'comparator';
-
-my @sorted_items = sort $cmp @items;
-
-print join "\n", @sorted_items;
-
+# Replaced with usort! :D
+# https://github.com/chreekat/usort
+exec usort $@
