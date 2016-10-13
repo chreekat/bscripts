@@ -1,10 +1,29 @@
 #!/bin/bash
 
+# Usually I want to exclude certain things. Use '.' to override.
+exclude=(
+    .stack-work
+    .git
+)
+
 if [ $# = 2 ]; then
     loc="$1"
     shift
 else
     loc=.
+    for e in ${exclude[@]}
+    do
+        exc="$exc -path ./*$e -prune -false -o "
+    done
 fi
 
-find "$loc" -iname "*$1*"
+# This is a family of executables, configured by name. We've got:
+search="*$1*"
+print=""
+
+case `basename $0` in
+    fn0) print="-print0";;
+    fnn) search="$1";;
+esac
+
+find "$loc" $exc -iname "$search" $print 2>/dev/null
