@@ -1,0 +1,33 @@
+#!/bin/bash
+
+theOther=
+mergebase=
+
+# With no args, compare against the index.
+if [ -z "$1" ]
+then
+    # But, if there is a busted merge, compare those instead!
+    if (git status -s | grep '^U\|^.U')
+    then
+        # I don't know that ORIG_HEAD is the right one here for rebases...?
+        # MERGE_HEAD is obviously correct for merges, though...
+        if [ -e .git/MERGE_HEAD ]
+        then
+            mergebase=$(git merge-base HEAD MERGE_HEAD)
+        else
+            mergebase=$(git merge-base HEAD ORIG_HEAD)
+        fi
+        diffables=$(git status -s | awk '/^U|^.U/ { print $2 }')
+    else
+        diffables=$(git diff --name-only)
+    fi
+# Otherwise, compare against the given argument.
+else
+    theOther=$1
+    diffables=$(git diff --name-only $1)
+fi
+
+if ! git diff --quiet $theOther
+then
+    echo $diffables
+fi
