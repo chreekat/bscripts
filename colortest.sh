@@ -1,6 +1,6 @@
 #!/bin/bash
 
-: ${DIM:=4}
+: ${DIM:=6}
 
 echo '
 
