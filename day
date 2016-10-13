@@ -27,7 +27,7 @@ if [ -n "$TMUX" ]; then
 fi
 
 # '+' means 'cursor at last line'
-vim + $log +startinsert\!
+vim + $log +'normal zt' +startinsert\!
 
 if [ -n "$TMUX" ]; then
     tmux set automatic-rename on >/dev/null
