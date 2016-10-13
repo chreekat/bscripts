@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+port=$[ $RANDOM + 1024 ]
+
+if [ -n "$1" ]; then
+    cd $1
+fi
+python -m SimpleHTTPServer $port &
+chromium-browser http://localhost:$port
+wait
