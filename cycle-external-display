@@ -5,6 +5,8 @@ die () {
     exit 1
 }
 
+self=$(basename $0)
+
 case $(hostname) in
     fuzzbomb)
         builtin=eDP1
@@ -59,10 +61,12 @@ auto () {
 }
 
 halp () {
-    echo "$0"
-    echo "    Toggle displays: both -> external -> builtin -> both"
     echo ""
-    echo "    Or pick one in particular with '$0 MODE'"
+    echo "$self [MODE]"
+    echo ""
+    echo "    Toggle displays: both -> external -> builtin -> both"
+    echo "    Or, pick one in particular with: $self MODE"
+    echo ""
 }
 
 case "$1" in
