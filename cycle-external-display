@@ -7,6 +7,9 @@ die () {
 
 self=$(basename $0)
 
+##
+## MODIFY HERE TO SUIT YOUR OWN COMPUTER(S)
+##
 case $(hostname) in
     fuzzbomb)
         builtin=eDP1
