@@ -3,10 +3,10 @@
 import sys
 
 if len(sys.argv) > 1 and sys.argv[1] == "barobo":
-  user = "bryan@barobo.com"
+  user = "barobo"
 else:
-  user = "bryan.richter@gmail.com"
+  user = "personal"
 
 from keyring import get_password
 
-print(get_password("gmail", user))
+print(get_password(sys.argv[1], sys.argv[2]))
