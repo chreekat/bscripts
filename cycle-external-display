@@ -5,6 +5,15 @@ die () {
     exit 1
 }
 
+halp () {
+    echo ""
+    echo "$self [MODE]"
+    echo ""
+    echo "    Toggle displays: both -> external -> builtin -> both"
+    echo "    Or, pick one in particular with: $self MODE"
+    echo ""
+}
+
 self=$(basename $0)
 
 ##
@@ -36,10 +45,6 @@ d_builtin () {
 }
 
 auto () {
-    if [ $(xrandr | grep \\bconnected | wc -l) -ne 2 ]; then
-        die "Connect an external device before cycling to it!"
-    fi
-
     status=$(
         xrandr |
         gawk "
@@ -63,15 +68,9 @@ auto () {
     fi
 }
 
-halp () {
-    echo ""
-    echo "$self [MODE]"
-    echo ""
-    echo "    Toggle displays: both -> external -> builtin -> both"
-    echo "    Or, pick one in particular with: $self MODE"
-    echo ""
-}
-
+if [ $(xrandr | grep \\bconnected | wc -l) -ne 2 ]; then
+    die "Connect an external device before cycling to it!"
+fi
 case "$1" in
     both|external|builtin)
         d_$1
