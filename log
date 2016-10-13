@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -e
+
+File=
+Title=
+
+_log () {
+    author="$@"
+    log=`git root`/$File
+    date=`ddate`
+    time=`date +%H:%M`
+
+    (
+        exec >>$log
+
+        [ "`tail -n 1 $log`" = "" ] || echo ""
+        if ! grep -q $date <$log ; then
+            echo -e "${date}\n------\n"
+        fi
+        echo -e "${time}: [$author] "
+    )
+
+    if [ -n "$TMUX" ]; then
+        tmux rename-window "$Title - $(basename `git root`)"
+    fi
+
+    # '+' means 'cursor at last line'
+    vim -c "setl sw=7 fo-=a" + $log +'normal zt' +startinsert\!
+
+    if [ -n "$TMUX" ]; then
+        tmux set automatic-rename on >/dev/null
+    fi
+}
+
+if [ "`basename $0`" = "nt" ]; then
+    Title="Notes"
+else
+    Title="Log"
+fi
+File=${Title}.txt
+
+if git root >/dev/null 2>&1 ; then
+    author=$(git config --get user.name)
+    if [ -n "$(ls $(git root)/.Log.txt.sw? 2>/dev/null)" ]; then
+        >&2 echo "Swap files exist!"
+        >&2 ls $(git root)/.Log.txt.sw?
+        exit 1
+    fi
+    _log $author
+else
+    echo "(No repo here)"
+fi
