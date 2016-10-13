@@ -1,6 +1,24 @@
 #!/bin/bash
 
+# Import the amv alias
+# XX FAIL
+#. ~/.bash_aliases
+# Besides, I need a version that preserves inode order. I.e. I have to
+# preserve it myself, because -R fucks it up.
+amv () {
+  audio_rename -p "Music/%a/%l/%{mA}%{n0}__%t" $@
+}
+
 set -e
+
+die () {
+  2>&1 echo "$@"
+  exit 1
+}
+
+if [ -z "$1" ]; then
+  die "Usage: $0 <input music dir>"
+fi
 
 cd $HOME
 
@@ -8,6 +26,22 @@ cd $HOME
 tmp=$(mktemp -d --tmpdir=Music)
 trap "rm -rf $tmp" EXIT
 
-rsync -r "$1/" $tmp
+echo "## Moving to same device as dest"
+rsync -ri "$1/" $tmp
 
-audio_rename -p "Music/%a/%l/%{mA}%{n0}__%t" -R $tmp
+# Rename into tmp subdirectory
+(
+  cd $tmp
+
+  echo
+  echo "## Renaming files"
+  amv -R .
+
+)
+
+# Now the "real" amv, but making inode order correct
+echo
+echo "## Putting files in Music"
+for i in `ls $tmp/Music/*/*/*`; do
+  amv $i
+done
