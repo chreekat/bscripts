@@ -1,3 +1,5 @@
 #!/bin/bash
 
-vim -q <(ack-grep --column "$@")
+set -e
+
+vim -q <(ack-grep "$@")
