@@ -3,5 +3,8 @@
 set -e
 
 while true; do
-    notify-send -t 3000 MPD "$(mpc current --wait)"
+    cur=$(mpc current --wait)
+    if [ -n "$cur" ]; then
+        notify-send -t 3000 "$cur"
+    fi
 done
