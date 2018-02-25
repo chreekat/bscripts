@@ -1,6 +1,9 @@
-#!/bin/bash
-if [ ${0##*/} = "mm" ]; then
-    vim +set\ buftype=nofile +'0,$d' +'silent! 0pu +' +'normal gggwG'
-else
-    vim +set\ buftype=nofile +'0,$d' +'silent! 0pu +'
-fi
+#!/usr/bin/env bash
+case `basename $0` in
+    m)
+        vim +set\ buftype=nofile +'0,$d' +'silent! 0pu +' +1
+        ;;
+    mm)
+        vim +set\ buftype=nofile +'0,$d' +'silent! 0pu +' +1 +'setf mail'
+        ;;
+esac
