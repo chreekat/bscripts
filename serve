@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -e
 
@@ -7,6 +7,5 @@ port=$[ $RANDOM + 1024 ]
 if [ -n "$1" ]; then
     cd $1
 fi
-python -m SimpleHTTPServer $port &
-chromium-browser http://localhost:$port
-wait
+(sleep 1 && xdg-open http://localhost:$port)&
+exec python -m SimpleHTTPServer $port 2>/dev/null

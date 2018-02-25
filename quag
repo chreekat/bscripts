@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Because ag doesn't have a way to say "always print filenames", tack on a
 # dummy filename. But only if the last argument is a file.

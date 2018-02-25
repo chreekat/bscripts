@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Usually I want to exclude certain things. Use '.' to override.
 exclude=(

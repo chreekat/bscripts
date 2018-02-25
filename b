@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 getBugDir () {
     dir="$(git root)"
-    if [ -e "${dir}/.git/bugs" ]; then
+    if [ -e "${dir}/.git/bugs" -o -e "${dir}/.git/.bugs.done" ]; then
         dir="${dir}/.git"
     fi
     echo "$dir"

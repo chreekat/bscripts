@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 die () {
     2>&1 echo "$@"
@@ -30,16 +30,19 @@ case $(hostname) in
 esac
 
 d_external () {
+    echo EXTERNAL
     xrandr --output $external --auto
     xrandr --output $builtin --off
 }
 
 d_both () {
+    echo BOTH
     xrandr --output $external --auto
     xrandr --output $builtin --below $external --auto
 }
 
 d_builtin () {
+    echo BUILTIN
     xrandr --output $builtin --auto
     xrandr --output $external --off
 }

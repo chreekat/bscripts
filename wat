@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 msg=""
 
@@ -15,6 +15,9 @@ case ${0##*/} in
         ;;
     "oh")
         msg="Yes, it's all becoming clear now."
+        ;;
+    "ok")
+        msg="yes"
         ;;
     *)
         msg="      wat"
