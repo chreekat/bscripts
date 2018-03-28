@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+## Check out a merge request locally
+
+doo () {
+    $@
+    #echo $@
+}
+
+THIS=
+scheme=
+case `basename $0` in
+    "git-mr")
+        scheme=gitlab
+        THIS="git mr"
+        ;;
+    "git-pr")
+        scheme=github
+        THIS="git pr"
+        ;;
+esac
+
+remote=
+case $# in
+    1)  >&2 echo "Usage: $THIS [remote] <req #> <local-branch-name>"
+        exit 1
+        ;;
+    2)
+        remote=origin
+        ;;
+    3)
+        remote=$1
+        shift
+        ;;
+esac
+
+reqNumber=$1
+branchName=$2
+
+ref=
+case $scheme in
+    gitlab)
+        ref="merge-requests/$reqNumber/head"
+        ;;
+    github)
+        ref="refs/pull/$reqNumber/head"
+        ;;
+esac
+
+doo git fetch $remote $ref &&
+doo git checkout -b $reqNumber--$branchName FETCH_HEAD
