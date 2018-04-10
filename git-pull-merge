@@ -31,3 +31,10 @@ git fetch $remote refs/pull/$pullNumber/head
 set +x
 
 git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\n\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
+
+echo
+echo PR merged into new local branch merging-$targetBranch. If all looks good,
+echo you can push this branch to $origin/$targetBranch to publish the merge.
+echo
+echo Alternatively, check out $targetBranch locally, then perform a fast-forward
+echo merge before pushing as normal.
