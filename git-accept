@@ -3,7 +3,7 @@
 set -e
 
 #
-# Usage: git pull-merge <targetRemote> <pullNumber>
+# Usage: git accept <targetRemote> <pullNumber>
 #
 # Performs a merge locally, creating a nice merge-commit message out of the PR
 # description. No local branches are modified, though you probably should have a
@@ -12,7 +12,7 @@ set -e
 
 if [ $# -ne 2 ]
 then
-    >&2 echo "Usage: git pull-merge <targetRemote> <pullNumber>"
+    >&2 echo "Usage: git accept <targetRemote> <pullNumber>"
     exit 1
 fi
 
@@ -33,7 +33,7 @@ curl \
     > $pullJson
 
 targetRef=$(jq -r .base.ref $pullJson)
-targetBranch=merging-$pullNumber-$(jq -r .base.ref $pullJson)
+targetBranch=merging-$pullNumber-$targetRef
 
 set -x
 git fetch $remote $targetRef
