@@ -3,8 +3,18 @@
 set -e
 
 #
-# Usage: git merge-pull origin 100
+# Usage: git pull-merge <targetRemote> <pullNumber>
 #
+# Performs a merge locally, creating a nice merge-commit message out of the PR
+# description. No local branches are modified, though you probably should have a
+# clean working tree just in case, yeah?
+#
+
+if [ $# -ne 2 ]
+then
+    >&2 echo "Usage: git pull-merge <targetRemote> <pullNumber>"
+    exit 1
+fi
 
 remote=$1
 pullNumber=$2
@@ -22,19 +32,23 @@ curl \
     https://api.github.com/repos/${user}/{$repo}/pulls/${pullNumber} \
     > $pullJson
 
-targetBranch=$(jq -r .base.ref $pullJson)
+targetRef=$(jq -r .base.ref $pullJson)
+targetBranch=merging-$pullNumber-$(jq -r .base.ref $pullJson)
 
 set -x
-git fetch $remote $targetBranch
-git checkout -b merging-$targetBranch $remote/$targetBranch
+git fetch $remote $targetRef
+git checkout -b $targetBranch FETCH_HEAD
 git fetch $remote refs/pull/$pullNumber/head
 set +x
 
 git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\n\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
 
 echo
-echo PR merged into new local branch merging-$targetBranch. If all looks good,
-echo you can push this branch to $origin/$targetBranch to publish the merge.
+echo PR \#${pullNumber} merged into new local branch $targetBranch.
+echo If looks good, you can push this branch to $origin/$targetRef to
+echo publish the merge.
 echo
-echo Alternatively, check out $targetBranch locally, then perform a fast-forward
-echo merge before pushing as normal.
+echo Alternatively, check out $targetBranch locally, then perform a fast-
+echo forward merge before pushing as normal.
+echo
+echo The branch $targetBranch can be deleted at will.
