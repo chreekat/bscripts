@@ -25,9 +25,9 @@ curl \
 targetBranch=$(jq -r .base.ref $pullJson)
 
 set -x
-git checkout $remote $targetBranch
-git pull --ff-only
+git fetch $remote $targetBranch
+git checkout -b merging-$targetBranch $remote/$targetBranch
 git fetch $remote refs/pull/$pullNumber/head
 set +x
 
-git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
+git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\n\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
