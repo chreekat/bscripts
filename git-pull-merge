@@ -43,12 +43,17 @@ set +x
 
 git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\n\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
 
+fmtd () { echo $@ | fmt -w 65 ; }
+
 echo
-echo PR \#${pullNumber} merged into new local branch $targetBranch.
-echo If looks good, you can push this branch to $origin/$targetRef to
-echo publish the merge.
+echo "------------------------------------------------------------"
+echo -e "\e[32mPR #${pullNumber} merged into new local branch \e[1;32m$targetBranch\e[0;32m.\e[0m"
 echo
-echo Alternatively, check out $targetBranch locally, then perform a fast-
-echo forward merge before pushing as normal.
+echo "If looks good, you can publish the merge with:"
 echo
-echo The branch $targetBranch can be deleted at will.
+echo "    git push $remote $targetBranch:$targetRef"
+echo
+fmtd "Alternatively, check out $targetRef locally, then perform a fast-forward merge before pushing as normal."
+echo
+fmtd "The branch $targetBranch can be deleted at will."
+echo "------------------------------------------------------------"
