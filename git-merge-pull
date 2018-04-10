@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -e
+
+#
+# Usage: git merge-pull origin 100
+#
+
+remote=$1
+pullNumber=$2
+pullJson=$(mktemp pull.XXXXXXXX.json)
+trap "rm -f $pullJson" EXIT
+
+# Two sorts of remote: git@ or https
+u=$(git remote get-url $remote)
+u=${u##*github.com?}
+user=${u%%/*}
+repo=${u##*/}
+repo=${repo%.git}
+
+curl \
+    https://api.github.com/repos/${user}/{$repo}/pulls/${pullNumber} \
+    > $pullJson
+
+targetBranch=$(jq -r .base.ref $pullJson)
+
+set -x
+git checkout $remote $targetBranch
+git pull --ff-only
+git fetch $remote refs/pull/$pullNumber/head
+set +x
+
+git merge FETCH_HEAD --no-ff -m "$(jq -j .title,'"\n\n"',.body,'"\nMerging pull request #"',.number,'" from "',.head.label,'"\n"' < $pullJson)"
