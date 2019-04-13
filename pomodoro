@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+LOG=~/.pomodoro.log
+PIDFILE=~/.pomodoro.pid
+STATUSFILE=~/.pomodoro.status
+LOCK () {
+    xset s activate
+}
+
+pomodoro_running () {
+    if [ -f $PIDFILE ]; then
+        cat $PIDFILE | xargs ps >/dev/null 2>&1
+    else
+        false
+    fi
+}
+
+quotes=(
+    "Come and see the violence inherent in the system!"
+    "Help! Help! I'm being repressed!"
+    "Found them? In Mercia?! The coconut's tropical!"
+    "It's not a question of where he grips it! It's a simple question of weight ratios!"
+    "No you're not, you'll be stone dead in a moment."
+    "Supreme executive power derives from a mandate from the masses, not from some farcical aquatic ceremony!"
+    "You can't expect to wield supreme power just 'cause some watery tart threw a sword at you!"
+    "Oh, she turned me into a newt!"
+    "No, now go away or I shall taunt you a second time!"
+    "Ni!"
+    "How does it... um... how does it work?"
+    "What are you going to do, bleed on me?"
+)
+
+title=
+mins=25
+action=
+
+if [ $# -gt 0 ]; then
+    if [ "$1" = "kill" ]; then
+        action=kill
+        shift
+    elif (echo $1 | grep -q --perl-regexp '^\d+$'); then
+        mins=$1
+        shift
+    fi
+fi
+title="$@"
+if [ -z "$title" ]; then
+    title="[unspecified]"
+fi
+if [ -z "$action" ]; then
+    if pomodoro_running; then
+        action="status"
+    else
+        action="start"
+    fi
+fi
+
+# Debug
+#for i in title mins action; do
+#    echo "$i: ${!i}"
+#done
+
+case "$action" in
+    status)
+        if pomodoro_running; then
+            cat $PIDFILE | xargs ps ho etime
+            tail -n 1 $LOG
+            echo
+            echo ${quotes[$RANDOM % ${#quotes[@]} ]}
+        else
+            echo "Forsooth, hearken unto the lack of a pomodoro!"
+            exit 1
+        fi
+        ;;
+    start)
+        echo "Beginning pomodoro: $title"
+
+        (
+        echo -n "$(date +'%Y-%m-%d %_H:%M'): "
+        echo "$title ($mins)"
+        ) >> $LOG
+        (
+        echo $BASHPID > $PIDFILE
+        trap "rm -f $PIDFILE $STATUSFILE" EXIT
+        for i in $(seq ${mins} | tac); do
+            echo "(pomo: $i)" > $STATUSFILE
+            sleep ${i}m
+        done
+        LOCK
+        )&
+        ;;
+    kill)
+        if pomodoro_running; then
+            echo "First we kill him, then we have tea."
+            kill $(cat $PIDFILE)
+        else
+            >&2 echo "Come and see the violence inherent in the system!"
+            exit 2
+        fi
+        ;;
+esac
