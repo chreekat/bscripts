@@ -17,6 +17,9 @@ pomodoro_running () {
     fi
 }
 
+runtime () {
+    ps ho etime $(cat $PIDFILE) | awk '{print $1}'
+}
 quotes=(
     "Come and see the violence inherent in the system!"
     "Help! Help! I'm being repressed!"
@@ -65,8 +68,8 @@ fi
 case "$action" in
     status)
         if pomodoro_running; then
-            cat $PIDFILE | xargs ps ho etime
             tail -n 1 $LOG
+            echo "Runtime: $(runtime)"
             echo
             echo ${quotes[$RANDOM % ${#quotes[@]} ]}
         else
@@ -86,15 +89,19 @@ case "$action" in
         trap "rm -f $PIDFILE $STATUSFILE" EXIT
         for i in $(seq ${mins} | tac); do
             echo "(pomo: $i)" > $STATUSFILE
-            sleep ${i}m
+            sleep 1m
         done
         LOCK
         )&
         ;;
     kill)
         if pomodoro_running; then
-            echo "First we kill him, then we have tea."
+            death="KILLED after $(runtime)"
             kill $(cat $PIDFILE)
+            ex -s $LOG '+$' "+s/\$/ $death/" +x || true
+            #                                   ^^^^^^^
+            # ex -s always returns 1, far as I can tell
+            tail -n 1 $LOG
         else
             >&2 echo "Come and see the violence inherent in the system!"
             exit 2
