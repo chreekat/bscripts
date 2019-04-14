@@ -2,9 +2,9 @@
 
 set -Eeuo pipefail
 
-LOG=~/.pomodoro.log
-PIDFILE=~/.pomodoro.pid
-STATUSFILE=~/.pomodoro.status
+LOG=~/pomodoro.log
+PIDFILE=$XDG_RUNTIME_DIR/pomodoro.pid
+STATUSFILE=$XDG_RUNTIME_DIR/pomodoro.status
 LOCK () {
     xset s activate
 }
