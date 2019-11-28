@@ -19,6 +19,9 @@ case ${0##*/} in
     "ok")
         msg="yes"
         ;;
+    "hm")
+        msg="¯\(°_o)/¯"
+        ;;
     *)
         msg="      wat"
 esac

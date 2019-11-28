@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+set -e
 theOther=
 mergebase=
 
@@ -7,7 +7,7 @@ mergebase=
 if [ -z "$1" ]
 then
     # But, if there is a busted merge, compare those instead!
-    if (git status -s | grep '^U\|^.U')
+    if (git status -s | grep -q '^U\|^.U')
     then
         # I don't know that ORIG_HEAD is the right one here for rebases...?
         # MERGE_HEAD is obviously correct for merges, though...
@@ -29,5 +29,6 @@ fi
 
 if ! git diff --quiet $theOther
 then
-    echo $diffables
+    # Putting in quotes preserves newlines. Learn new things e'rday.
+    echo "$diffables"
 fi

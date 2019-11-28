@@ -43,6 +43,9 @@ if [ $# -gt 0 ]; then
     if [ "$1" = "kill" ]; then
         action=kill
         shift
+    elif [ "$1" = "status" ]; then
+        action=status
+        shift
     elif (echo $1 | grep -q --perl-regexp '^\d+$'); then
         mins=$1
         shift
@@ -64,35 +67,43 @@ fi
 #for i in title mins action; do
 #    echo "$i: ${!i}"
 #done
+show_status () {
+    tail -n 1 $LOG
+    echo "Runtime: $(runtime)"
+    echo
+    echo ${quotes[$RANDOM % ${#quotes[@]} ]}
+}
 
 case "$action" in
     status)
         if pomodoro_running; then
-            tail -n 1 $LOG
-            echo "Runtime: $(runtime)"
-            echo
-            echo ${quotes[$RANDOM % ${#quotes[@]} ]}
+            show_status
         else
             echo "Forsooth, hearken unto the lack of a pomodoro!"
             exit 1
         fi
         ;;
     start)
-        echo "Beginning pomodoro: $title"
+        if pomodoro_running; then
+            show_status
+            exit 1
+        else
+            echo "Beginning pomodoro: $title"
 
-        (
-        echo -n "$(date +'%Y-%m-%d %_H:%M'): "
-        echo "$title ($mins)"
-        ) >> $LOG
-        (
-        echo $BASHPID > $PIDFILE
-        trap "rm -f $PIDFILE $STATUSFILE" EXIT
-        for i in $(seq ${mins} | tac); do
-            echo "(pomo: $i)" > $STATUSFILE
-            sleep 1m
-        done
-        LOCK
-        )&
+            (
+            echo -n "$(date +'%Y-%m-%d %_H:%M'): "
+            echo "$title ($mins)"
+            ) >> $LOG
+            (
+            echo $BASHPID > $PIDFILE
+            trap "rm -f $PIDFILE $STATUSFILE" EXIT
+            for i in $(seq ${mins} | tac); do
+                echo "(pomo: $i)" > $STATUSFILE
+                sleep 1m
+            done
+            LOCK
+            )&
+        fi
         ;;
     kill)
         if pomodoro_running; then
