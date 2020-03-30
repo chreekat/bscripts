@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+
+## Toggle screensaver state.
+
+blank_on () {
+    # Blank screen after 3 minutes, dim for 10, and then really blank the
+    # screen. This can't be done through NixOS yet: the two ways of doing it are
+    # xset (procedural) and arguments to Xserver itself.
+    xset s 180 7
+    xset s blank
+    xset +dpms
+}
+
+blank_off () {
+    xset s off
+    xset -dpms
+}
+
+usage='
+
+         scr: Turn the screensaver on or off.
+
+Usage:
+
+    scr [on|off]
+
+'
+
+case $1 in
+    on) blank_on ;;
+    off) blank_off ;;
+    *) >&2 echo "$usage"; exit 1 ;;
+esac
