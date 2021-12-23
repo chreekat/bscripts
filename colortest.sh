@@ -77,6 +77,27 @@ for (( i=0; i<$DIM; i++ )); do
     done
 done
 
+echo "
+
+Next, the same block, but as background using \e[7;38;5;NUMm, 0 <= NUM < ( ${DIM}x${DIM}x${DIM} )
+Bold off (\e[0;7;38;5;NUMm) ${space}| Bold on (\e[1;7;38;5;NUMm)
+------------------------- ${space}| ------------------------
+                          ${space}|"
+
+for (( i=0; i<$DIM; i++ )); do
+    for (( j=0; j<$DIM; j++ )); do
+        for (( bold_p=0; bold_p < 2; bold_p++ )); do
+            for (( k=0; k<$DIM; k++)); do
+                (( n = 16 + i + j*$DIM + k*$DIM*$DIM ))
+                c="\\e[${bold_p};7;38;5;${n}m"
+                echo -en $c
+                printf 'color%.3d    ' $n
+            done
+            [ $bold_p -eq 0 ] && echo -en "\e[0m|    "
+        done
+        echo -e "\e[0m"
+    done
+done
 echo '
 
 And now grayscale, using \e[38;5;NUMm. Bottom group is with bold on.
