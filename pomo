@@ -5,8 +5,11 @@ set -Eeuo pipefail
 LOG=~/pomodoro.log
 PIDFILE=$XDG_RUNTIME_DIR/pomodoro.pid
 STATUSFILE=$XDG_RUNTIME_DIR/pomodoro.status
+
+. ~/.bash/timeclock.bash
 LOCK () {
     xset s activate
+    to
 }
 
 pomodoro_running () {
