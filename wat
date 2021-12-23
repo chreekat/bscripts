@@ -22,8 +22,28 @@ case ${0##*/} in
     "hm")
         msg="¯\(°_o)/¯"
         ;;
+    "fuck")
+        msg='
+ / \-------------------,
+ \_,|                  |
+    |       Get        |
+    |       Rekt       |
+    |                  |
+    |       Lol        |
+    |  ,-----------------
+    \_/________________/ '
+        ;;
     *)
         msg="      wat"
 esac
 
-echo -e "\n$msg\n"
+echo
+(
+IFS='\n'
+read -r lin; echo "$lin"
+while read -r lin; do
+    echo "$lin"
+    sleep 0.3
+done;
+) < <(echo "$msg")
+echo
