@@ -2,13 +2,13 @@
 
 set -e
 
-log=~/Documents/Log.txt
+log=~/Syncthing/PhoneFiles/Log.txt
 date=`ddate`
 time=`date +%H:%M`
 
-if [ -n "$(ls ~/Documents/.Log.txt.sw? 2>/dev/null)" ]; then
+if [ -n "$(ls ~/Syncthing/PhoneFiles/.Log.txt.sw? 2>/dev/null)" ]; then
     >&2 echo "Swap files exist!"
-    >&2 ls ~/Documents/.Log.txt.sw?
+    >&2 ls ~/Syncthing/PhoneFiles/.Log.txt.sw?
     exit 1
 fi
 
