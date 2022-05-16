@@ -8,7 +8,7 @@ Title=
 _log () {
     author="$@"
     log=`git root`/$File
-    date=`ddate`
+    date="$(date '+%Y-%m-%d')"
     time=`date +%H:%M`
 
     (
@@ -16,7 +16,7 @@ _log () {
 
         [ "`tail -n 1 $log`" = "" ] || echo ""
         if ! grep -q $date <$log ; then
-            echo -e "${date}\n------\n"
+            echo -e "${date}\n----------\n"
         fi
         echo -e "${time}: [$author] "
     )
