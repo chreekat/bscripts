@@ -18,6 +18,16 @@ blank_off () {
     xset -dpms
 }
 
+## Toggle redshift
+
+redshift_on () {
+    systemctl --user start redshift.service
+}
+
+redshift_off () {
+    systemctl --user stop redshift.service
+}
+
 usage='
 
          scr: Turn the screensaver on or off.
@@ -29,7 +39,7 @@ Usage:
 '
 
 case $1 in
-    on) blank_on ;;
-    off) blank_off ;;
+    on) blank_on; redshift_on;;
+    off) blank_off; redshift_off ;;
     *) >&2 echo "$usage"; exit 1 ;;
 esac
