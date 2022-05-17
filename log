@@ -26,7 +26,7 @@ _log () {
     fi
 
     # '+' means 'cursor at last line'
-    vim -c "setl sw=7 fo-=a" + $log +'normal zt' +startinsert\!
+    vim + $log +'normal zt' +Goyo +startinsert\!
 
     if [ -n "$TMUX" ]; then
         tmux set automatic-rename on >/dev/null

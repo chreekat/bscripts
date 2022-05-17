@@ -3,7 +3,7 @@
 set -e
 
 log=~/Syncthing/PhoneFiles/Log.txt
-date=`ddate`
+date="$(date '+%Y-%m-%d')"
 time=`date +%H:%M`
 
 if [ -n "$(ls ~/Syncthing/PhoneFiles/.Log.txt.sw? 2>/dev/null)" ]; then
@@ -17,7 +17,7 @@ fi
 
     [ "`tail -n 1 $log`" = "" ] || echo ""
     if ! grep -q $date <$log ; then
-        echo -e "${date}\n------\n"
+        echo -e "${date}\n----------\n"
     fi
     echo -e "${time}: "
 )
