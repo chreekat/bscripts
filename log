@@ -18,7 +18,7 @@ _log () {
         if ! grep -q $date <$log ; then
             echo -e "${date}\n----------\n"
         fi
-        echo -e "${time}: [$author] "
+        echo -e "${time}: [$author]"
     )
 
     if [ -n "$TMUX" ]; then

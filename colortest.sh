@@ -66,7 +66,7 @@ for (( i=0; i<$DIM; i++ )); do
     for (( j=0; j<$DIM; j++ )); do
         for (( bold_p=0; bold_p < 2; bold_p++ )); do
             for (( k=0; k<$DIM; k++)); do
-                (( n = 16 + i + j*$DIM + k*$DIM*$DIM ))
+                (( n = 16 + k + j*$DIM + i*$DIM*$DIM ))
                 c="\\e[${bold_p};38;5;${n}m"
                 echo -en $c
                 printf 'color%.3d    ' $n
@@ -88,7 +88,7 @@ for (( i=0; i<$DIM; i++ )); do
     for (( j=0; j<$DIM; j++ )); do
         for (( bold_p=0; bold_p < 2; bold_p++ )); do
             for (( k=0; k<$DIM; k++)); do
-                (( n = 16 + i + j*$DIM + k*$DIM*$DIM ))
+                (( n = 16 + k + j*$DIM + i*$DIM*$DIM ))
                 c="\\e[${bold_p};7;38;5;${n}m"
                 echo -en $c
                 printf 'color%.3d    ' $n

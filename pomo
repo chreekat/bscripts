@@ -6,6 +6,7 @@ LOG=~/pomodoro.log
 PIDFILE=$XDG_RUNTIME_DIR/pomodoro.pid
 STATUSFILE=$XDG_RUNTIME_DIR/pomodoro.status
 
+# shellcheck source=/home/b/.bash/timeclock.bash
 . ~/.bash/timeclock.bash
 LOCK () {
     xset s activate
@@ -13,15 +14,15 @@ LOCK () {
 }
 
 pomodoro_running () {
-    if [ -f $PIDFILE ]; then
-        cat $PIDFILE | xargs ps >/dev/null 2>&1
+    if [ -f "$PIDFILE" ]; then
+        cat < "$PIDFILE" | xargs ps >/dev/null 2>&1
     else
         false
     fi
 }
 
 runtime () {
-    ps ho etime $(cat $PIDFILE) | awk '{print $1}'
+    ps ho etime "$(cat "$PIDFILE")" | awk '{print $1}'
 }
 quotes=(
     "Come and see the violence inherent in the system!"
@@ -43,18 +44,24 @@ mins=25
 action=
 
 if [ $# -gt 0 ]; then
-    if [ "$1" = "kill" ]; then
-        action=kill
-        shift
-    elif [ "$1" = "status" ]; then
-        action=status
-        shift
-    elif (echo $1 | grep -q --perl-regexp '^\d+$'); then
-        mins=$1
-        shift
-    fi
+    case "$1" in
+        kill|stop)
+            action="kill"
+            shift
+            ;;
+        status)
+            action=status
+            shift
+            ;;
+        *)
+            if (echo "$1" | grep -q --perl-regexp '^\d+$'); then
+                mins=$1
+                shift
+            fi
+            ;;
+    esac
 fi
-title="$@"
+title=$*
 if [ -z "$title" ]; then
     title="[unspecified]"
 fi
@@ -74,7 +81,7 @@ show_status () {
     tail -n 1 $LOG
     echo "Runtime: $(runtime)"
     echo
-    echo ${quotes[$RANDOM % ${#quotes[@]} ]}
+    echo "${quotes[$RANDOM % ${#quotes[@]} ]}"
 }
 
 case "$action" in
@@ -98,10 +105,11 @@ case "$action" in
             echo "$title ($mins)"
             ) >> $LOG
             (
-            echo $BASHPID > $PIDFILE
+            echo $BASHPID > "$PIDFILE"
+            # shellcheck disable=SC2064
             trap "rm -f $PIDFILE $STATUSFILE" EXIT
-            for i in $(seq ${mins} | tac); do
-                echo "(pomo: $i)" > $STATUSFILE
+            for i in $(seq "${mins}" | tac); do
+                echo "(pomo: $i)" > "$STATUSFILE"
                 sleep 1m
             done
             LOCK
@@ -111,7 +119,7 @@ case "$action" in
     kill)
         if pomodoro_running; then
             death="KILLED after $(runtime)"
-            kill $(cat $PIDFILE)
+            kill "$(cat "$PIDFILE")"
             ex -s $LOG '+$' "+s/\$/ $death/" +x || true
             #                                   ^^^^^^^
             # ex -s always returns 1, far as I can tell

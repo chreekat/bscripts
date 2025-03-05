@@ -3,8 +3,6 @@
 set -e
 
 log=~/Syncthing/PhoneFiles/Log.txt
-date="$(date '+%Y-%m-%d')"
-time=`date +%H:%M`
 
 if [ -n "$(ls ~/Syncthing/PhoneFiles/.Log.txt.sw? 2>/dev/null)" ]; then
     >&2 echo "Swap files exist!"
@@ -12,24 +10,18 @@ if [ -n "$(ls ~/Syncthing/PhoneFiles/.Log.txt.sw? 2>/dev/null)" ]; then
     exit 1
 fi
 
-(
-    exec >>$log
-
-    [ "`tail -n 1 $log`" = "" ] || echo ""
-    if ! grep -q $date <$log ; then
-        echo -e "${date}\n----------\n"
+name_window () {
+    if [ -n "$TMUX" ]; then
+        tmux rename-window day
     fi
-    echo -e "${time}: "
-)
+}
 
-if [ -n "$TMUX" ]; then
-    tmux rename-window day
-fi
+unname_window () {
+    if [ -n "$TMUX" ]; then
+        tmux set automatic-rename on >/dev/null
+    fi
+}
 
-# '+' means 'cursor at last line'
-vim + $log +'normal zt' +Goyo +startinsert\!
-
-if [ -n "$TMUX" ]; then
-    tmux set automatic-rename on >/dev/null
-fi
-
+trap unname_window EXIT
+name_window
+vim $log +'normal GzoGzt' +'Goyo 100' +Timestamp
