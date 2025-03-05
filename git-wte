@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+git-wte () {
+    set -Eeuo pipefail
+    repo=$(basename "$(git rev-parse --show-toplevel)")
+    mkdir -p "$(dirname ~/worktrees/"$repo"/"$1")"
+    # What are the possibilities here...
+    # 1. The requested branch name already exists.
+    # 1.a. <commit-ish> was supplied. Abort!
+    # 1.b. continue creating the worktree
+    # 2. The branch name has an upstream equivalent.
+    # 2.a. <commit-ish> was supplied. Abort!
+    # 2.b. Create the worktree and track the upstream
+    # 3. Brand new branch
+    # 3a. <commit-ish> is supplied. Start there.
+    # 3b. $# is 1. Start wherever you're at.
+    if git show-ref --verify --quiet "refs/heads/$1"; then
+        if [ $# -eq 2 ]; then
+            echo "Branch '$1' already exists. Aborting."
+            exit 1
+        fi
+        git worktree add ~/worktrees/"$repo"/"$1" "$1"
+    elif git show-ref --verify --quiet "refs/remotes/origin/$1"; then
+        if [ $# -eq 2 ]; then
+            echo "Branch '$1' already exists on origin. Aborting."
+            exit 1
+        fi
+        git worktree add ~/worktrees/"$repo"/"$1" "$1"
+    else # New branch
+        if [ $# -eq 2 ]; then
+            git worktree add ~/worktrees/"$repo"/"$1" -b "$1" "${2}"
+        else
+            git worktree add ~/worktrees/"$repo"/"$1" -b "$1"
+        fi
+    fi
+}
+
+if [ $# -eq 0 ]; then
+    echo "Usage: git wte <branch> [<commit-ish>]"
+    echo ""
+    echo "Creates a new worktree for the current repository at ~/worktrees/<repo>/<branch>"
+    echo "and creates/checks out branch <branch> starting at <commit-ish> (if provided)."
+    exit 0
+fi
+
+git-wte "$@"
+    if git show-ref --verify --quiet "refs/heads/$1"; then
+        2>&1 echo "Ignoring <commit-ish> since $1 already exists"
+        git worktree add ~/worktrees/"$repo"/"$1" "$1"
+    else
+        git worktree add ~/worktrees/"$repo"/"$1" -b "$1" ${2:+"${2}"}
+    fi
+    echo ~/worktrees/"$repo"/"$1"
