@@ -6,14 +6,6 @@ usage () {
     echo "Usage: invoicer [-a|--archived] [check|status|week|next|invoice [week|month]|<arbitrary hledger command line>]"
 }
 
-USE_ARCHIVED=false
-
-FILES=( Log.txt )
-# If USE_ARCHIVED is true, then include all FILES of format Log_<date>.txt
-if $USE_ARCHIVED; then
-    FILES+=( Log_*.txt )
-fi
-
 basic () {
     local file_args=()
     for f in "${FILES[@]}"; do
@@ -100,6 +92,9 @@ check () {
     fi
 }
 
+USE_ARCHIVED=false
+FILES=( Log.txt )
+
 while :; do
     case ${1:-} in
         -a|--archived)
@@ -118,6 +113,11 @@ while :; do
         *) break ;;
     esac
 done
+
+if $USE_ARCHIVED; then
+    FILES+=( Log_*.txt )
+fi
+
 case ${1:-} in
     # Are there any entries that don't have a status? That would be bad!
     check)
