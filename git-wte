@@ -2,7 +2,6 @@
 set -Eeuo pipefail
 
 git-wte () {
-    set -Eeuo pipefail
     repo=$(basename "$(git rev-parse --show-toplevel)")
     mkdir -p "$(dirname ~/worktrees/"$repo"/"$1")"
     # What are the possibilities here...
@@ -16,20 +15,27 @@ git-wte () {
     # 3a. <commit-ish> is supplied. Start there.
     # 3b. $# is 1. Start wherever you're at.
     if git show-ref --verify --quiet "refs/heads/$1"; then
+        # 1.a.
         if [ $# -eq 2 ]; then
             echo "Branch '$1' already exists. Aborting."
             exit 1
         fi
+        # 1.b.
         git worktree add ~/worktrees/"$repo"/"$1" "$1"
     elif git show-ref --verify --quiet "refs/remotes/origin/$1"; then
+        # 2.a.
         if [ $# -eq 2 ]; then
             echo "Branch '$1' already exists on origin. Aborting."
             exit 1
         fi
+        # 2.b.
+        # N.B. branch is created and follows upstream automatically
         git worktree add ~/worktrees/"$repo"/"$1" "$1"
     else # New branch
+        # 3.a.
         if [ $# -eq 2 ]; then
             git worktree add ~/worktrees/"$repo"/"$1" -b "$1" "${2}"
+        # 3.b.
         else
             git worktree add ~/worktrees/"$repo"/"$1" -b "$1"
         fi
@@ -45,10 +51,3 @@ if [ $# -eq 0 ]; then
 fi
 
 git-wte "$@"
-    if git show-ref --verify --quiet "refs/heads/$1"; then
-        2>&1 echo "Ignoring <commit-ish> since $1 already exists"
-        git worktree add ~/worktrees/"$repo"/"$1" "$1"
-    else
-        git worktree add ~/worktrees/"$repo"/"$1" -b "$1" ${2:+"${2}"}
-    fi
-    echo ~/worktrees/"$repo"/"$1"
